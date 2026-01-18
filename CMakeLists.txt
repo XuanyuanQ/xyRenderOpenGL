@@ -31,6 +31,11 @@ target_include_directories(glad
 # GLFW（源码）
 # =====================
 # 关闭不需要的内容（强烈推荐）
+set(GLM_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLM_BUILD_INSTALL OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(external/glm)
+
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -40,14 +45,21 @@ add_subdirectory(external/glfw-3.4)
 # =====================
 # 可执行程序
 # =====================
-add_executable(OpenGLWindow
-    src/main.cpp
+file(GLOB_RECURSE SRC_FILES
+    src/*.cpp
+    src/*.h
 )
+
+add_executable(OpenGLWindow
+    ${SRC_FILES}
+)
+target_include_directories(OpenGLWindow PRIVATE src)
 
 target_link_libraries(OpenGLWindow
     PRIVATE
         glfw
         glad
+        glm
         OpenGL::GL
 )
 
