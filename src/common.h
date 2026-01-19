@@ -2,6 +2,10 @@
 #include <String>
 #include <glm/glm.hpp>
 
+// 窗口大小
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
 using Callback = std::function<void()>;
 
 struct Vertex

@@ -1,6 +1,10 @@
 #include "renderInterface.h"
+#include <glm/gtc/type_ptr.hpp>
 
-renderInterface::renderInterface(/* args */) {}
+renderInterface::renderInterface(/* args */)
+{
+    m_camera = std::make_shared<Camera>();
+}
 
 renderInterface::~renderInterface() {}
 
@@ -42,24 +46,29 @@ bool renderInterface::initContex()
     m_window = window;
 }
 
-void renderInterface::render(std::vector<Callback> cbs)
+void renderInterface::render(std::unordered_map<int, std::vector<Callback>> cb_map)
 {
     // -----------
     while (!glfwWindowShouldClose(m_window))
     {
-        // input
-        // -----
-        // processInput(m_window);
-
+        float currentFrame = static_cast<float>(glfwGetTime());
+        float deltaTime = currentFrame - m_lastFrame;
+        m_lastFrame = currentFrame;
+        m_camera->processInput(m_window, deltaTime);
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        for (auto& cb : cbs)
+        for (auto& c : cb_map) // 同一个shaderID 只调用一次
         {
-            if (cb != nullptr)
+            activeShader(c.first);
+            for (auto& cb : c.second)
             {
-                cb();
+                if (cb != nullptr)
+                {
+
+                    cb();
+                }
             }
         }
         // glBindVertexArray(0); // no need to unbind it every time
@@ -69,6 +78,50 @@ void renderInterface::render(std::vector<Callback> cbs)
         glfwSwapBuffers(m_window);
         glfwPollEvents();
     }
+}
+
+void renderInterface::bindingUniAttr1i(int shaderID, const std::string& name, int value)
+{
+    GLint location = glGetUniformLocation(shaderID, name.c_str());
+    if (location != -1)
+        glUniform1i(location, value);
+}
+
+void renderInterface::bindingUniAttr1f(int shaderID, const std::string& name, float value)
+{
+    GLint location = glGetUniformLocation(shaderID, name.c_str());
+    if (location != -1)
+        glUniform1f(location, value);
+}
+
+void renderInterface::bindingUniAttr4mat(int shaderID, const std::string& name,
+                                         const glm::mat4& value)
+{
+    GLint location = glGetUniformLocation(shaderID, name.c_str());
+    if (location != -1)
+        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void renderInterface::bindingUniAttr4f(int shaderID, const std::string& name,
+                                       const glm::vec4& value)
+{
+    GLint location = glGetUniformLocation(shaderID, name.c_str());
+    if (location != -1)
+        glUniform4fv(location, 1, glm::value_ptr(value));
+}
+void renderInterface::drawPrimitive(int vao)
+{
+
+    glBindVertexArray(vao); // seeing as we only have a single VAO there's no need to bind it
+                            // every time, but we'll do so to keep things a bit more organized
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+void renderInterface::activeShader(int shaderProgamID)
+{
+    glUseProgram(shaderProgamID);
+    bindingUniAttr4mat(shaderProgamID, "view", m_camera->getViewMatrix());
+    bindingUniAttr4mat(shaderProgamID, "projection", m_camera->getProjectionMatrix());
 }
 
 int renderInterface::loadShader(const char* vertexShaderSource, const char* fragmentShaderSource)

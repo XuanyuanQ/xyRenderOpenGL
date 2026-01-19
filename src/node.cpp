@@ -4,9 +4,11 @@
 
 const char* vertexShaderSource = "#version 330 core\n"
                                  "layout (location = 0) in vec3 aPos;\n"
+                                 "uniform mat4 view;\n"
+                                 "uniform mat4 projection;\n"
                                  "void main()\n"
                                  "{\n"
-                                 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+                                 "   gl_Position = projection*view*vec4(aPos, 1.0);\n"
                                  "}\0";
 const char* fragmentShaderSource = "#version 330 core\n"
                                    "out vec4 FragColor;\n"
@@ -44,8 +46,5 @@ primitive Node::createPrimitive()
 
 void Node::draw()
 {
-    glUseProgram(m_shaderProgamID);
-    glBindVertexArray(m_vao); // seeing as we only have a single VAO there's no need to bind it
-                              // every time, but we'll do so to keep things a bit more organized
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    renderInterface::Instance().drawPrimitive(m_vao);
 }

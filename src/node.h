@@ -11,6 +11,10 @@ class Node
     ~Node();
     primitive createPrimitive();
     void draw();
+    int getShaderProgamID()
+    {
+        return m_shaderProgamID;
+    }
 
   private:
     primitive m_content;
