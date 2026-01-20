@@ -34,3 +34,31 @@ void Node::draw()
 {
     renderInterface::Instance().drawPrimitive(m_vao);
 }
+
+void Node::setParent(Node* parent)
+{
+    if (m_parent == parent)
+    {
+        return;
+    }
+    if (nullptr != m_parent)
+    {
+        auto& children = m_parent->getChildren();
+        children.erase(std::remove(children.begin(), children.end(), this), children.end());
+    }
+    m_parent = parent;
+    if (nullptr != m_parent)
+    {
+        parent->getChildren().push_back(this);
+    }
+}
+void Node::addChildren(std::vector<Node*>& children)
+{
+    for (auto& child : children)
+    {
+        if (child)
+        {
+            child->setParent(this);
+        }
+    }
+}
