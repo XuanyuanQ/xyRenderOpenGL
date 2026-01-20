@@ -32,7 +32,6 @@ class renderInterface
   private:
     renderInterface(/* args */);
     ~renderInterface();
-    std::string loadShaderSource(const std::string& filePath);
 
   private:
     GLFWwindow* m_window;
