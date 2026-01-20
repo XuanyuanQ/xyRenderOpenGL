@@ -83,3 +83,13 @@ if (WIN32)
         )
     endif()
 endif()
+
+# 定义目标 shader 目录
+set(SHADER_SRC "${CMAKE_SOURCE_DIR}/shader")
+set(SHADER_DST "$<TARGET_FILE_DIR:OpenGLWindow>/shader")
+
+# 确保创建目标目录
+add_custom_command(TARGET OpenGLWindow POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${SHADER_DST}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADER_SRC} ${SHADER_DST}
+)

@@ -1,21 +1,7 @@
 #include "node.h"
 #include "renderInterface.h"
+#include <shaderManager.h>
 #include <array>
-
-const char* vertexShaderSource = "#version 330 core\n"
-                                 "layout (location = 0) in vec3 aPos;\n"
-                                 "uniform mat4 view;\n"
-                                 "uniform mat4 projection;\n"
-                                 "void main()\n"
-                                 "{\n"
-                                 "   gl_Position = projection*view*vec4(aPos, 1.0);\n"
-                                 "}\0";
-const char* fragmentShaderSource = "#version 330 core\n"
-                                   "out vec4 FragColor;\n"
-                                   "void main()\n"
-                                   "{\n"
-                                   "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-                                   "}\n\0";
 
 Node::Node(/* args */) {}
 
@@ -40,7 +26,7 @@ primitive Node::createPrimitive()
     m_vbo = renderInterface::Instance().genAndBindingVBO();
     renderInterface::Instance().bindingLocAttr(position);
     m_shaderProgamID =
-        renderInterface::Instance().loadShader(vertexShaderSource, fragmentShaderSource);
+        shaderManager::Instance().loadShader("shader/defualt.vs", "shader/defualt.fs");
     return content;
 }
 

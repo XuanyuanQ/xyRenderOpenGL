@@ -1,6 +1,8 @@
 #include "renderInterface.h"
 #include <glm/gtc/type_ptr.hpp>
 
+#include <shaderManager.h>
+
 renderInterface::renderInterface(/* args */)
 {
     m_camera = std::make_shared<Camera>();
@@ -46,7 +48,8 @@ bool renderInterface::initContex()
     m_window = window;
 }
 
-void renderInterface::render(std::unordered_map<int, std::vector<Callback>> cb_map)
+void renderInterface::render(
+    std::unordered_map<int, std::vector<std::function<void(std::shared_ptr<Camera>)>>> cb_map)
 {
     // -----------
     while (!glfwWindowShouldClose(m_window))
@@ -61,13 +64,13 @@ void renderInterface::render(std::unordered_map<int, std::vector<Callback>> cb_m
         glClear(GL_COLOR_BUFFER_BIT);
         for (auto& c : cb_map) // 同一个shaderID 只调用一次
         {
-            activeShader(c.first);
+            shaderManager::Instance().activeShader(c.first);
             for (auto& cb : c.second)
             {
                 if (cb != nullptr)
                 {
 
-                    cb();
+                    cb(m_camera); // draw primitive
                 }
             }
         }
@@ -80,35 +83,6 @@ void renderInterface::render(std::unordered_map<int, std::vector<Callback>> cb_m
     }
 }
 
-void renderInterface::bindingUniAttr1i(int shaderID, const std::string& name, int value)
-{
-    GLint location = glGetUniformLocation(shaderID, name.c_str());
-    if (location != -1)
-        glUniform1i(location, value);
-}
-
-void renderInterface::bindingUniAttr1f(int shaderID, const std::string& name, float value)
-{
-    GLint location = glGetUniformLocation(shaderID, name.c_str());
-    if (location != -1)
-        glUniform1f(location, value);
-}
-
-void renderInterface::bindingUniAttr4mat(int shaderID, const std::string& name,
-                                         const glm::mat4& value)
-{
-    GLint location = glGetUniformLocation(shaderID, name.c_str());
-    if (location != -1)
-        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
-}
-
-void renderInterface::bindingUniAttr4f(int shaderID, const std::string& name,
-                                       const glm::vec4& value)
-{
-    GLint location = glGetUniformLocation(shaderID, name.c_str());
-    if (location != -1)
-        glUniform4fv(location, 1, glm::value_ptr(value));
-}
 void renderInterface::drawPrimitive(int vao)
 {
 
@@ -116,62 +90,6 @@ void renderInterface::drawPrimitive(int vao)
                             // every time, but we'll do so to keep things a bit more organized
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
-
-void renderInterface::activeShader(int shaderProgamID)
-{
-    glUseProgram(shaderProgamID);
-    bindingUniAttr4mat(shaderProgamID, "view", m_camera->getViewMatrix());
-    bindingUniAttr4mat(shaderProgamID, "projection", m_camera->getProjectionMatrix());
-}
-
-int renderInterface::loadShader(const char* vertexShaderSource, const char* fragmentShaderSource)
-{
-    // build and compile our shader program
-    // ------------------------------------
-    // vertex shader
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    // check for shader compile errors
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-        return -1;
-    }
-    // fragment shader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    // check for shader compile errors
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-        return -1;
-    }
-    // link shaders
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    // check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-        return -1;
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-    return shaderProgram;
-}
-
 int renderInterface::genAndBindingVAO()
 {
     unsigned int VAO;

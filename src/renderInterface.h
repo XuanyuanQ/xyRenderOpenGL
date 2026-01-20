@@ -6,6 +6,7 @@
 #include <array>
 #include "common.h"
 #include "camera.h"
+#include <unordered_map>
 
 class renderInterface
 {
@@ -17,24 +18,21 @@ class renderInterface
     }
 
   public:
-    void render(std::unordered_map<int, std::vector<Callback>> cb_map);
+    void render(
+        std::unordered_map<int, std::vector<std::function<void(std::shared_ptr<Camera>)>>> cb_map);
 
     bool initContex();
-    int loadShader(const char* vertexShaderSource, const char* fragmentShaderSource);
+
     int genAndBindingVAO();
     int genAndBindingVBO();
     void drawPrimitive(int vao);
-    void activeShader(int shaderProgamID);
-    void bindingLocAttr(const std::array<glm::vec3, 3>& positions); // location类的属性绑定
 
-    void bindingUniAttr1i(int shaderID, const std::string& name, int value);
-    void bindingUniAttr1f(int shaderID, const std::string& name, float value);
-    void bindingUniAttr4mat(int shaderID, const std::string& name, const glm::mat4& value);
-    void bindingUniAttr4f(int shaderID, const std::string& name, const glm::vec4& value);
+    void bindingLocAttr(const std::array<glm::vec3, 3>& positions); // location类的属性绑定
 
   private:
     renderInterface(/* args */);
     ~renderInterface();
+    std::string loadShaderSource(const std::string& filePath);
 
   private:
     GLFWwindow* m_window;
