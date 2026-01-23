@@ -55,7 +55,7 @@ struct Rendertranformation
 struct primitive
 {
     primitiveType type;
-    Rendertranformation transform;
+    // Rendertranformation transform;
     std::string shaderPath;
     // shader attribute
 };

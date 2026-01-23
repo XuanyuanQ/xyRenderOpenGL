@@ -2,6 +2,8 @@
 #include "common.h"
 #include <algorithm>
 #include <String>
+#include <memory>
+#include "transform.h"
 
 class Node
 {
@@ -23,14 +25,20 @@ class Node
     {
         return m_children;
     }
+
     void setParent(Node* parent);
     void addChildren(std::vector<Node*>& children);
+    transform* getTransform()
+    {
+        return m_transform.get();
+    }
 
   private:
     primitive m_content;
     int m_vbo;
     int m_vao;
     int m_shaderProgamID;
-    Node* m_parent;
+    Node* m_parent = nullptr;
     std::vector<Node*> m_children;
+    std::shared_ptr<transform> m_transform;
 };

@@ -3,7 +3,10 @@
 #include <shaderManager.h>
 #include <array>
 
-Node::Node(/* args */) {}
+Node::Node(/* args */)
+{
+    m_transform = std::make_shared<transform>();
+}
 
 Node::~Node() {}
 

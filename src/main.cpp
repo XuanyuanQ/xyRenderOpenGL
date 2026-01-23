@@ -20,6 +20,16 @@ int main()
                                                      camera->getViewMatrix());
         shaderManager::Instance().bindingUniAttr4mat(node->getShaderProgamID(), "projection",
                                                      camera->getProjectionMatrix());
+        glm::mat4 world = glm::mat4(1.0);
+        if (node->getParent() != nullptr)
+        {
+            world = node->getParent()->getTransform()->getWorldMatrix();
+        }
+        if (node->getTransform() != nullptr)
+        {
+            world = world * node->getTransform()->getWorldMatrix();
+        }
+        shaderManager::Instance().bindingUniAttr4mat(node->getShaderProgamID(), "world", world);
     };
     std::unordered_map<int, std::vector<std::function<void(std::shared_ptr<Camera>)>>> renderQueue;
     std::vector<std::function<void(std::shared_ptr<Camera>)>> drawQueue;
