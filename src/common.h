@@ -17,6 +17,7 @@ struct Vertex
 
 enum primitiveType
 {
+    Triangle = 0,
     Rectangle,
     Cube,
     Circal,
@@ -58,6 +59,15 @@ struct primitive
     // Rendertranformation transform;
     std::string shaderPath;
     // shader attribute
+};
+
+struct PrimitveData
+{
+    void* data;         // attribute 数据
+    int dataSize;       // 该 attribute 的总字节数
+    int locationID;     // layout(location = x)
+    int componentCount; // 3 for vec3, 2 for vec2
+    int offset;         // 在 VBO 中的偏移
 };
 
 struct Shader

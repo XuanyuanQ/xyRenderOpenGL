@@ -12,6 +12,7 @@ class Node
     Node(/* args */);
     ~Node();
     primitive createPrimitive();
+    void createPrimitive(primitiveType type);
     void draw();
     int getShaderProgamID()
     {
@@ -32,6 +33,13 @@ class Node
     {
         return m_transform.get();
     }
+
+  private:
+    void createTriangle(float width = 1.f, float height = 1.f);
+    void createRectangle(float width, float height);
+    void createCircel(float width, float height);
+    void createSphere(float width, float height);
+    void createCube(float width, float height, float depth);
 
   private:
     primitive m_content;

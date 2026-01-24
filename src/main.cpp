@@ -9,7 +9,8 @@ int main()
 {
     renderInterface::Instance().initContex();
     auto node = std::make_shared<Node>();
-    node->createPrimitive();
+    // node->createPrimitive();
+    node->createPrimitive(static_cast<primitiveType>(0));
 
     // std::vector<Callback> renderQueue;
 

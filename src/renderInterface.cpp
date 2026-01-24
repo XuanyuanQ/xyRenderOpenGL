@@ -118,3 +118,25 @@ void renderInterface::bindingLocAttr(const std::array<glm::vec3, 3>& positions)
 
     glEnableVertexAttribArray(0);
 }
+
+void renderInterface::bindingLocAttr(const std::vector<PrimitveData>& vertex_data)
+{
+    int totalSize = 0;
+    for (auto const& data : vertex_data)
+    {
+        totalSize += data.dataSize;
+    }
+    if (totalSize == 0)
+    {
+        return;
+    }
+
+    glBufferData(GL_ARRAY_BUFFER, totalSize, nullptr, GL_STATIC_DRAW);
+    for (auto const& data : vertex_data)
+    {
+        glBufferSubData(GL_ARRAY_BUFFER, data.offset, data.dataSize, data.data);
+        glVertexAttribPointer(data.locationID, data.componentCount, GL_FLOAT, GL_FALSE, 0,
+                              (void*)data.offset);
+        glEnableVertexAttribArray(data.locationID);
+    }
+}

@@ -28,6 +28,7 @@ class renderInterface
     void drawPrimitive(int vao);
 
     void bindingLocAttr(const std::array<glm::vec3, 3>& positions); // location类的属性绑定
+    void bindingLocAttr(const std::vector<PrimitveData>& vertex_data);
 
   private:
     renderInterface(/* args */);
