@@ -25,7 +25,8 @@ class renderInterface
 
     int genAndBindingVAO();
     int genAndBindingVBO();
-    void drawPrimitive(int vao);
+    int genAndBindingIBO(int size, void* data);
+    void drawPrimitive(int vao, int ibo = 0, int indices_nb = 0);
 
     void bindingLocAttr(const std::array<glm::vec3, 3>& positions); // location类的属性绑定
     void bindingLocAttr(const std::vector<PrimitveData>& vertex_data);

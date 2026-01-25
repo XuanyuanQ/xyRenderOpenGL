@@ -4,16 +4,9 @@
 #include "common.h "
 #include <unordered_map>
 #include <shaderManager.h>
-
-int main()
+std::unordered_map<int, std::vector<std::function<void(std::shared_ptr<Camera>)>>> renderQueue;
+std::function<void(std::shared_ptr<Camera>)> testFuncCb(std::shared_ptr<Node> node)
 {
-    renderInterface::Instance().initContex();
-    auto node = std::make_shared<Node>();
-    // node->createPrimitive();
-    node->createPrimitive(static_cast<primitiveType>(0));
-
-    // std::vector<Callback> renderQueue;
-
     auto uniformFunc = [node](std::shared_ptr<Camera> camera)
     // 测试用，后续需要修改调用，如view矩阵等同一个shader只是传递一次
     {
@@ -32,7 +25,11 @@ int main()
         }
         shaderManager::Instance().bindingUniAttr4mat(node->getShaderProgamID(), "world", world);
     };
-    std::unordered_map<int, std::vector<std::function<void(std::shared_ptr<Camera>)>>> renderQueue;
+    return uniformFunc;
+}
+
+void testRenderQueue(std::shared_ptr<Node> node, std::function<void(std::shared_ptr<Camera>)> cb)
+{
     std::vector<std::function<void(std::shared_ptr<Camera>)>> drawQueue;
     if (renderQueue.find(node->getShaderProgamID()) == renderQueue.end())
     {
@@ -41,12 +38,30 @@ int main()
     }
 
     renderQueue[node->getShaderProgamID()].push_back(
-        [node, uniformFunc](std::shared_ptr<Camera> camera)
+        [node, cb](std::shared_ptr<Camera> camera)
         {
-            uniformFunc(camera); // 执行矩阵绑定
-            node->draw();        // 执行绘制
+            cb(camera);   // 执行矩阵绑定
+            node->draw(); // 执行绘制
         });
+}
+int main()
+{
+    renderInterface::Instance().initContex();
+    auto node = std::make_shared<Node>();
+    node->createPrimitive(static_cast<primitiveType>(0));
+    node->getTransform()->setTranslation(glm::vec3(0.7f, -1.f, 0.f));
+    auto uniformFunc = testFuncCb(node);
+    testRenderQueue(node, uniformFunc);
 
-    // renderQueue.push_back([node]() { node->draw(); });
+    auto rectangle = std::make_shared<Node>();
+    rectangle->createPrimitive(static_cast<primitiveType>(1));
+    rectangle->getTransform()->setTranslation(glm::vec3(-0.7f, 1.f, 0.f));
+    uniformFunc = testFuncCb(rectangle);
+    testRenderQueue(rectangle, uniformFunc);
+
+    auto circle = std::make_shared<Node>();
+    circle->createPrimitive(primitiveType::Circle);
+    uniformFunc = testFuncCb(circle);
+    testRenderQueue(circle, uniformFunc);
     renderInterface::Instance().render(renderQueue);
 }

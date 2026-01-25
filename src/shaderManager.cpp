@@ -39,7 +39,6 @@ void shaderManager::bindingUniAttr4f(int shaderID, const std::string& name, cons
         glUniform4fv(location, 1, glm::value_ptr(value));
 }
 
-
 void shaderManager::activeShader(int shaderProgamID)
 {
     glUseProgram(shaderProgamID);
@@ -65,12 +64,13 @@ int shaderManager::loadShader(const std::string& vertexShaderPath,
                               const std::string& fragmentShaderPath)
 {
 
-    auto it = shaderIDMap.find({vertexShaderPath, fragmentShaderPath});
-    if (it != shaderIDMap.end())
+    auto it = m_shaderIDMap.find({vertexShaderPath, fragmentShaderPath});
+    if (it != m_shaderIDMap.end())
     {
 
         return it->second; // 用 ->second 获取 value
     }
+    // std::cout << "loadShader" << std::endl;
     // build and compile our shader program
     // ------------------------------------
     // vertex shader
@@ -121,5 +121,6 @@ int shaderManager::loadShader(const std::string& vertexShaderPath,
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+    m_shaderIDMap[{vertexShaderPath, fragmentShaderPath}] = shaderProgram;
     return shaderProgram;
 }

@@ -36,15 +36,17 @@ class Node
 
   private:
     void createTriangle(float width = 1.f, float height = 1.f);
-    void createRectangle(float width, float height);
-    void createCircel(float width, float height);
-    void createSphere(float width, float height);
-    void createCube(float width, float height, float depth);
+    void createRectangle(float width = 1.f, float height = 1.f);
+    void createCircel(float r = 1.f);
+    void createSphere(float width = 1.f, float height = 1.f);
+    void createCube(float width = 1.f, float height = 1.f, float depth = 1.f);
 
   private:
     primitive m_content;
     int m_vbo;
     int m_vao;
+    int m_ibo = 0;
+    int m_indices_nb = 0;
     int m_shaderProgamID;
     Node* m_parent = nullptr;
     std::vector<Node*> m_children;

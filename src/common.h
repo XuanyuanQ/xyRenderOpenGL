@@ -20,7 +20,7 @@ enum primitiveType
     Triangle = 0,
     Rectangle,
     Cube,
-    Circal,
+    Circle,
     Sphere,
     Model
 };

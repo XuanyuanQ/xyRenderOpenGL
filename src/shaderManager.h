@@ -27,5 +27,5 @@ class shaderManager
     std::string loadShaderSource(const std::string& filePath);
 
   private:
-    std::map<std::pair<std::string, std::string>, int> shaderIDMap;
+    std::map<std::pair<std::string, std::string>, int> m_shaderIDMap;
 };

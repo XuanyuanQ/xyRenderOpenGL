@@ -62,9 +62,11 @@ void renderInterface::render(
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        // std::cout << "start----" << std::endl;
         for (auto& c : cb_map) // 同一个shaderID 只调用一次
         {
             shaderManager::Instance().activeShader(c.first);
+            // std::cout << "activeShader----" << std::endl;
             for (auto& cb : c.second)
             {
                 if (cb != nullptr)
@@ -74,6 +76,7 @@ void renderInterface::render(
                 }
             }
         }
+        // std::cout << "end----" << std::endl;
         // glBindVertexArray(0); // no need to unbind it every time
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -83,12 +86,20 @@ void renderInterface::render(
     }
 }
 
-void renderInterface::drawPrimitive(int vao)
+void renderInterface::drawPrimitive(int vao, int ibo, int indices_nb)
 {
 
     glBindVertexArray(vao); // seeing as we only have a single VAO there's no need to bind it
                             // every time, but we'll do so to keep things a bit more organized
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    if (ibo > 0)
+    {
+        // std::cout << "indices_nb:" << indices_nb << std::endl;
+        glDrawElements(GL_TRIANGLES, indices_nb, GL_UNSIGNED_INT, 0);
+    }
+    else
+    {
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+    }
 }
 int renderInterface::genAndBindingVAO()
 {
@@ -103,6 +114,17 @@ int renderInterface::genAndBindingVBO()
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     return VBO;
+}
+int renderInterface::genAndBindingIBO(int indexCount, void* data)
+{
+    unsigned int ibo = 0;
+    glGenBuffers(1, &ibo);
+    assert(ibo != 0u);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(indexCount * sizeof(glm::uvec3)),
+                 data, GL_STATIC_DRAW);
+    return ibo;
 }
 void renderInterface::bindingLocAttr(const std::array<glm::vec3, 3>& positions)
 {
