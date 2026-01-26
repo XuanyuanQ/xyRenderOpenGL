@@ -60,7 +60,8 @@ int main()
     testRenderQueue(rectangle, uniformFunc);
 
     auto circle = std::make_shared<Node>();
-    circle->createPrimitive(primitiveType::Circle);
+    // circle->createPrimitive(primitiveType::Circle);
+    // circle->createPrimitive(primitiveType::Cube);
     uniformFunc = testFuncCb(circle);
     testRenderQueue(circle, uniformFunc);
     renderInterface::Instance().render(renderQueue);

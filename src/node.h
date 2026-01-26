@@ -38,7 +38,7 @@ class Node
     void createTriangle(float width = 1.f, float height = 1.f);
     void createRectangle(float width = 1.f, float height = 1.f);
     void createCircel(float r = 1.f);
-    void createSphere(float width = 1.f, float height = 1.f);
+    void createSphere(float r = 1.f);
     void createCube(float width = 1.f, float height = 1.f, float depth = 1.f);
 
   private:
